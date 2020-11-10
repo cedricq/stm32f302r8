@@ -59,6 +59,8 @@ void Error_Handler(void);
 TIM_HandleTypeDef* getTIM1();
 void toggleLED();
 void togglePin();
+void setPin();
+void resetPin();
 void setDuty(TIM_TypeDef* TIM, float val);
 
 /* USER CODE END EFP */
