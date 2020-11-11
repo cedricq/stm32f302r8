@@ -159,11 +159,8 @@ int main(void)
   HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
   HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
   HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3);
-  //HAL_TIM_OC_Start_IT(&htim1,TIM_CHANNEL_1);
-  //HAL_TIM_OC_Start_IT(&htim1,TIM_CHANNEL_2);
-  //HAL_TIM_OC_Start_IT(&htim1,TIM_CHANNEL_3);
   HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_4);
-  //HAL_TIM_Base_Start_IT(&htim1);
+
   HAL_TIM_Base_Start_IT(&htim6);
 
   PhaseHandler ph;
@@ -178,9 +175,9 @@ int main(void)
     Error_Handler();
   }
 
-
   HAL_ADC_Start_DMA(&hadc1, pData, Length);
-  //HAL_ADC_Start_IT(&hadc1);
+  hadc1.DMA_Handle->Instance->CCR &= ~DMA_IT_HT;
+  hadc1.Instance->IER |= ADC_IT_EOC;
 
   /* USER CODE END 2 */
 
@@ -287,10 +284,10 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
-  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
+  hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T2_TRGO;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.NbrOfConversion = 1;
   hadc1.Init.DMAContinuousRequests = ENABLE;
@@ -452,13 +449,13 @@ static void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_OC1;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
+  sConfigOC.OCMode = TIM_OCMODE_ACTIVE;
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
